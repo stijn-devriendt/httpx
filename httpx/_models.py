@@ -393,11 +393,11 @@ class URL:
         Return `True` for absolute URLs such as 'http://example.com/path',
         and `False` for relative URLs such as '/path'.
         """
-        # We don't use `.is_absolute` from `rfc3986` because it treats
+        # We work around `.is_absolute` from `rfc3986` because it treats
         # URLs with a fragment portion as not absolute.
         # What we actually care about is if the URL provides
         # a scheme and hostname to which connections should be made.
-        return bool(self._uri_reference.scheme and self._uri_reference.host)
+        return self._uri_reference.copy_with(fragment=None).is_absolute()
 
     @property
     def is_relative_url(self) -> bool:

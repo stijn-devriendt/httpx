@@ -376,3 +376,32 @@ def test_ipv6_url_from_raw_url(host):
     assert url.host == "::ffff:192.168.0.1"
     assert url.netloc == b"[::ffff:192.168.0.1]"
     assert str(url) == "https://[::ffff:192.168.0.1]/"
+
+@pytest.mark.parametrize(
+    "raw_url",
+    [
+        "/path",
+        "/path to something",
+        "/path/to/something",
+        "../path/to/something",
+        ".."
+    ]
+)
+def test_relative(raw_url):
+    url = httpx.URL(raw_url)
+    assert url.is_relative_url
+    assert not url.is_absolute_url
+
+@pytest.mark.parametrize(
+    "raw_url",
+    [
+        "http://host/path?query#fragment",
+        "http://host/path",
+        "http://host",
+        "file:///path/to/something",
+    ]
+)
+def test_absolute(raw_url):
+    url = httpx.URL(raw_url)
+    assert url.is_absolute_url
+    assert not url.is_relative_url
